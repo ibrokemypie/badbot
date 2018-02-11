@@ -12,19 +12,26 @@ import (
 )
 
 var (
+	confFile = "config.toml"
+	conf     *toml.Tree
 	token    string
 	ownerid  string
 	nickname string
 	status   string
+	err      error
 )
 
 func config() {
-	config, _ := toml.LoadFile("config.toml")
+	conf, err = toml.LoadFile(confFile)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
-	token = config.Get("token").(string)
-	ownerid = config.Get("ownerid").(string)
-	nickname = config.Get("nickname").(string)
-	status = config.Get("status").(string)
+	token = conf.Get("token").(string)
+	ownerid = conf.Get("ownerid").(string)
+	nickname = conf.Get("nickname").(string)
+	status = conf.Get("status").(string)
 }
 
 func main() {
@@ -71,6 +78,8 @@ func main() {
 
 	// Cleanly close down the Discord session.
 	discord.Close()
+	f, _ := os.Create(confFile)
+	f.WriteString(conf.String())
 }
 
 func botInit(s *discordgo.Session) {
@@ -92,19 +101,42 @@ func messageCreate(d *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	//If message starts with >Say, say the following text
+	//If message starts with >say, say the following text
 	if strings.HasPrefix(m.Content, ">say ") {
 		s := strings.SplitAfterN(m.Content, " ", 2)
 		fmt.Println(s)
 		d.ChannelMessageSend(m.ChannelID, (s[1]))
 	}
 
-	// If the message is "ping" reply with "Pong!"
+	//If message starts with >game, say the following text
+	if strings.HasPrefix(m.Content, ">game ") || strings.HasPrefix(m.Content, ">status ") {
+		s := strings.SplitAfterN(m.Content, " ", 2)
+		fmt.Println(s)
+		conf.Set("status", s[1])
+		d.UpdateStatus(0, s[1])
+	}
+
+	//If message starts with >game, say the following text
+	if strings.HasPrefix(m.Content, ">name ") || strings.HasPrefix(m.Content, ">nick ") {
+		s := strings.SplitAfterN(m.Content, " ", 2)
+		fmt.Println(s)
+		guilds, err := d.UserGuilds(100, "", "")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		for _, guild := range guilds {
+			conf.Set("nickname", s[1])
+			d.GuildMemberNickname(guild.ID, "@me", s[1])
+		}
+	}
+
+	// If the message is ">ping" reply with "Pong!"
 	if m.Content == ">ping" {
 		d.ChannelMessageSend(m.ChannelID, "pong")
 	}
 
-	// If the message is "pong" reply with "Ping!"
+	// If the message is ">pong" reply with "Ping!"
 	if m.Content == ">pong" {
 		d.ChannelMessageSend(m.ChannelID, "ping")
 	}
