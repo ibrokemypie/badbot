@@ -12,8 +12,10 @@ import (
 )
 
 var (
-	token   string
-	ownerid string
+	token    string
+	ownerid  string
+	nickname string
+	status   string
 )
 
 func config() {
@@ -21,6 +23,8 @@ func config() {
 
 	token = config.Get("token").(string)
 	ownerid = config.Get("ownerid").(string)
+	nickname = config.Get("nickname").(string)
+	status = config.Get("status").(string)
 }
 
 func main() {
@@ -70,7 +74,7 @@ func main() {
 }
 
 func botInit(s *discordgo.Session) {
-	s.UpdateStatus(0, "with potato")
+	s.UpdateStatus(0, status)
 
 	guilds, err := s.UserGuilds(100, "", "")
 	if err != nil {
@@ -78,7 +82,7 @@ func botInit(s *discordgo.Session) {
 		return
 	}
 	for _, guild := range guilds {
-		s.GuildMemberNickname(guild.ID, "@me", "pretty bad ey")
+		s.GuildMemberNickname(guild.ID, "@me", nickname)
 	}
 }
 
