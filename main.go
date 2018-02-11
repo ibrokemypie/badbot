@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/ibrokemypie/bot/plugins"
 	"github.com/pelletier/go-toml"
 )
 
@@ -18,6 +19,7 @@ var (
 	ownerid  string
 	nickname string
 	status   string
+	image    string
 	err      error
 )
 
@@ -32,6 +34,7 @@ func config() {
 	ownerid = conf.Get("ownerid").(string)
 	nickname = conf.Get("nickname").(string)
 	status = conf.Get("status").(string)
+	image = conf.Get("image").(string)
 }
 
 func main() {
@@ -84,6 +87,7 @@ func main() {
 
 func botInit(s *discordgo.Session) {
 	s.UpdateStatus(0, status)
+	s.UserUpdate("", "", "", image, "")
 
 	guilds, err := s.UserGuilds(100, "", "")
 	if err != nil {
@@ -106,6 +110,21 @@ func messageCreate(d *discordgo.Session, m *discordgo.MessageCreate) {
 		s := strings.SplitAfterN(m.Content, " ", 2)
 		fmt.Println(s)
 		d.ChannelMessageSend(m.ChannelID, (s[1]))
+	}
+
+	//If message starts with >game, say the following text
+	if strings.HasPrefix(m.Content, ">pfp") || strings.HasPrefix(m.Content, ">avatar") {
+		fmt.Println(m.Content)
+		img := m.Message.Attachments[0].URL
+
+		baseimg := plugins.EncodeImage(img)
+
+		conf.Set("image", baseimg)
+		_, err := d.UserUpdate("", "", "", baseimg, "")
+		if err != nil {
+			fmt.Println(err)
+			d.ChannelMessageSend(m.ChannelID, err.Error())
+		}
 	}
 
 	//If message starts with >game, say the following text
