@@ -9,10 +9,21 @@ import (
 )
 
 func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree) {
-	// If the message is ">pong" reply with "Ping!"
+	// If the message is ">nangs" define nangs"
 	if m.Content == ">nang" || m.Content == ">nangs" {
 		d.ChannelMessageSend(m.ChannelID, "```\nAn Australian slang term for a Nitrous oxide bulb, derived from the sound distortion that occurs when one is under the influence of the drug.\n```")
 	}
+
+	// If the message is ">qoohme" link to qooh.me "
+	if m.Content == ">qooh" || m.Content == ">qoohme" {
+		d.ChannelMessageSend(m.ChannelID, "http://qooh.me/ibrokemypie")
+	}
+
+	// If the message is ">sarahah" link to sarahah"
+	if m.Content == ">sarahah" {
+		d.ChannelMessageSend(m.ChannelID, "https://ibrokemypie.sarahah.com")
+	}
+
 	if m.Author.ID == conf.Get("ownerid").(string) {
 		//If message starts with >say, say the following text
 		if strings.HasPrefix(m.Content, ">say ") {
