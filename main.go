@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
@@ -103,62 +102,5 @@ func botInit(s *discordgo.Session) {
 
 // message is created on any channel that the autenticated bot has access to.
 func messageCreate(d *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Author.ID != ownerid {
-		return
-	}
-
-	//If message starts with >say, say the following text
-	if strings.HasPrefix(m.Content, ">say ") {
-		s := strings.SplitAfterN(m.Content, " ", 2)
-		fmt.Println(s)
-		d.ChannelMessageSend(m.ChannelID, (s[1]))
-	}
-
-	//If message starts with >game, say the following text
-	if strings.HasPrefix(m.Content, ">pfp") || strings.HasPrefix(m.Content, ">avatar") {
-		fmt.Println(m.Content)
-		img := m.Message.Attachments[0].URL
-
-		baseimg := plugins.EncodeImage(img)
-
-		conf.Set("image", baseimg)
-		_, err := d.UserUpdate("", "", "", baseimg, "")
-		if err != nil {
-			fmt.Println(err)
-			d.ChannelMessageSend(m.ChannelID, err.Error())
-		}
-	}
-
-	//If message starts with >game, say the following text
-	if strings.HasPrefix(m.Content, ">game ") || strings.HasPrefix(m.Content, ">status ") {
-		s := strings.SplitAfterN(m.Content, " ", 2)
-		fmt.Println(s)
-		conf.Set("status", s[1])
-		d.UpdateStatus(0, s[1])
-	}
-
-	//If message starts with >game, say the following text
-	if strings.HasPrefix(m.Content, ">name ") || strings.HasPrefix(m.Content, ">nick ") {
-		s := strings.SplitAfterN(m.Content, " ", 2)
-		fmt.Println(s)
-		guilds, err := d.UserGuilds(100, "", "")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		for _, guild := range guilds {
-			conf.Set("nickname", s[1])
-			d.GuildMemberNickname(guild.ID, "@me", s[1])
-		}
-	}
-
-	// If the message is ">ping" reply with "Pong!"
-	if m.Content == ">ping" {
-		d.ChannelMessageSend(m.ChannelID, "pong")
-	}
-
-	// If the message is ">pong" reply with "Ping!"
-	if m.Content == ">pong" {
-		d.ChannelMessageSend(m.ChannelID, "ping")
-	}
+	go plugins.Commands(d, m, conf)
 }
