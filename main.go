@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/ibrokemypie/bot/plugins"
+	"github.com/ibrokemypie/badbot/plugins"
 	"github.com/pelletier/go-toml"
 )
 
