@@ -86,7 +86,9 @@ func main() {
 
 func botInit(s *discordgo.Session) {
 	s.UpdateStatus(0, status)
-	s.UserUpdate("", "", "", image, "")
+
+	// Dont need to update this on launch I think, or any tbf but this one gets limited
+	//s.UserUpdate("", "", "", image, "")
 
 	guilds, err := s.UserGuilds(100, "", "")
 	if err != nil {
