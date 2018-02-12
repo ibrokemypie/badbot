@@ -97,6 +97,8 @@ func botInit(s *discordgo.Session) {
 	for _, guild := range guilds {
 		s.GuildMemberNickname(guild.ID, "@me", nickname)
 	}
+
+	go plugins.Work(s)
 }
 
 // message is created on any channel that the autenticated bot has access to.
