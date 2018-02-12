@@ -28,10 +28,10 @@ func EncodeImage(url string) string {
 	extension := filetype(filename)
 	var buff bytes.Buffer
 
-	if extension == "jpg" || extension == "jpeg" {
+	if strings.EqualFold(extension, "jpg ") || strings.EqualFold(extension, "jpeg") {
 		loadedImage, _ := jpeg.Decode(existingImageFile)
 		jpeg.Encode(&buff, loadedImage, nil)
-	} else if extension == "png" {
+	} else if strings.EqualFold(extension, "png") {
 		loadedImage, _ := png.Decode(existingImageFile)
 		png.Encode(&buff, loadedImage)
 	}
