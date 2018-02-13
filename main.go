@@ -104,5 +104,6 @@ func botInit(s *discordgo.Session) {
 
 // message is created on any channel that the autenticated bot has access to.
 func messageCreate(d *discordgo.Session, m *discordgo.MessageCreate) {
+	go plugins.Replies(d, m, conf)
 	go plugins.Commands(d, m, conf)
 }
