@@ -24,6 +24,16 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 		d.ChannelMessageSend(m.ChannelID, "https://ibrokemypie.sarahah.com")
 	}
 
+	// If the message is ">sarahah" link to sarahah"
+	if m.Content == ">woof" || m.Content == ">dog" {
+		d.ChannelMessageSend(m.ChannelID, Woof())
+	}
+
+	// If the message is ">sarahah" link to sarahah"
+	if m.Content == ">meow" || m.Content == ">cat" {
+		d.ChannelMessageSend(m.ChannelID, Meow())
+	}
+
 	if m.Author.ID == conf.Get("ownerid").(string) {
 		//If message starts with >say, say the following text
 		if strings.HasPrefix(m.Content, ">say ") {
