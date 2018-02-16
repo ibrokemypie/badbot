@@ -9,6 +9,17 @@ import (
 )
 
 func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree) {
+	// If the message is ">git" link to github
+	if m.Content == ">git" || m.Content == ">github" {
+		d.ChannelMessageSend(m.ChannelID, "https://github.com/ibrokemypie/badbot")
+	}
+
+
+	// If the message is ">help" return help
+	if m.Content == ">help" || m.Content == ">h" {
+		d.ChannelMessageSend(m.ChannelID, "Only god can save you.\n Try >git")
+	}
+
 	// If the message is ">nangs" define nangs"
 	if m.Content == ">nang" || m.Content == ">nangs" {
 		d.ChannelMessageSend(m.ChannelID, "```\nAn Australian slang term for a Nitrous oxide bulb, derived from the sound distortion that occurs when one is under the influence of the drug.\n```")
@@ -24,12 +35,12 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 		d.ChannelMessageSend(m.ChannelID, "https://ibrokemypie.sarahah.com")
 	}
 
-	// If the message is ">sarahah" link to sarahah"
+	// If the message is ">woof" send randoim dog"
 	if m.Content == ">woof" || m.Content == ">dog" {
 		d.ChannelMessageSend(m.ChannelID, Woof())
 	}
 
-	// If the message is ">sarahah" link to sarahah"
+	// If the message is ">meow" send random cat"
 	if m.Content == ">meow" || m.Content == ">cat" {
 		d.ChannelMessageSend(m.ChannelID, Meow())
 	}
