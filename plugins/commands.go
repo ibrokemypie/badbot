@@ -14,7 +14,6 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 		d.ChannelMessageSend(m.ChannelID, "https://github.com/ibrokemypie/badbot")
 	}
 
-
 	// If the message is ">help" return help
 	if m.Content == ">help" || m.Content == ">h" {
 		d.ChannelMessageSend(m.ChannelID, "Only god can save you.\n Try >git")
@@ -43,6 +42,16 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 	// If the message is ">meow" send random cat"
 	if m.Content == ">meow" || m.Content == ">cat" {
 		d.ChannelMessageSend(m.ChannelID, Meow())
+	}
+
+	// If the message is ">ping" reply with "Pong!"
+	if m.Content == ">ping" {
+		d.ChannelMessageSend(m.ChannelID, "pong")
+	}
+
+	// If the message is ">pong" reply with "Ping!"
+	if m.Content == ">pong" {
+		d.ChannelMessageSend(m.ChannelID, "ping")
 	}
 
 	if m.Author.ID == conf.Get("ownerid").(string) {
@@ -89,16 +98,6 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 				conf.Set("nickname", s[1])
 				d.GuildMemberNickname(guild.ID, "@me", s[1])
 			}
-		}
-
-		// If the message is ">ping" reply with "Pong!"
-		if m.Content == ">ping" {
-			d.ChannelMessageSend(m.ChannelID, "pong")
-		}
-
-		// If the message is ">pong" reply with "Ping!"
-		if m.Content == ">pong" {
-			d.ChannelMessageSend(m.ChannelID, "ping")
 		}
 	}
 }
