@@ -19,6 +19,7 @@ var (
 	nickname string
 	status   string
 	image    string
+	workchan string
 	err      error
 )
 
@@ -34,6 +35,7 @@ func config() {
 	nickname = conf.Get("nickname").(string)
 	status = conf.Get("status").(string)
 	image = conf.Get("image").(string)
+	workchan = conf.GetDefault("workchan", "").(string)
 }
 
 func main() {
@@ -98,8 +100,9 @@ func botInit(s *discordgo.Session) {
 	for _, guild := range guilds {
 		s.GuildMemberNickname(guild.ID, "@me", nickname)
 	}
-
-	go plugins.Work(s)
+	if workchan != "" {
+		go plugins.Work(s, conf.Get("workchan").(string))
+	}
 }
 
 // message is created on any channel that the autenticated bot has access to.

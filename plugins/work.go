@@ -6,11 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var (
-	channelID = "231252749218611200"
-)
-
-func Work(d *discordgo.Session) {
+func Work(d *discordgo.Session, channelID string) {
 
 	for {
 		d.ChannelMessageSend(channelID, ".timely")
