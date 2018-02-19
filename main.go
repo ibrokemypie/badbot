@@ -20,6 +20,7 @@ var (
 	status   string
 	image    string
 	workchan string
+	replies  bool
 	err      error
 )
 
@@ -35,6 +36,7 @@ func config() {
 	nickname = conf.Get("nickname").(string)
 	status = conf.Get("status").(string)
 	image = conf.Get("image").(string)
+	replies = conf.Get("replies").(bool)
 	workchan = conf.GetDefault("workchan", "").(string)
 }
 
@@ -107,6 +109,8 @@ func botInit(s *discordgo.Session) {
 
 // message is created on any channel that the autenticated bot has access to.
 func messageCreate(d *discordgo.Session, m *discordgo.MessageCreate) {
-	go plugins.Replies(d, m, conf)
+	if replies == true {
+		go plugins.Replies(d, m, conf)
+	}
 	go plugins.Commands(d, m, conf)
 }
