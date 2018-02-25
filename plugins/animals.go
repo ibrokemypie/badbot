@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -9,7 +10,11 @@ import (
 func Woof() string {
 	url := "https://random.dog/"
 
-	resp, _ := http.Get(url + "woof")
+	resp, err := http.Get(url + "woof")
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
 	defer resp.Body.Close()
 
 	body, _ := ioutil.ReadAll(resp.Body)
@@ -23,7 +28,11 @@ func Meow() string {
 
 	url := "https://random.cat/"
 
-	resp, _ := http.Get(url + "meow")
+	resp, err := http.Get(url + "meow")
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
 	defer resp.Body.Close()
 
 	body, _ := ioutil.ReadAll(resp.Body)
