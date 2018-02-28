@@ -31,8 +31,8 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 	}
 
 	// If the message is ">git" link to github
-	if m.Content == ">mem" || m.Content == ">memory" {
-		d.ChannelMessageSend(m.ChannelID, Mem())
+	if m.Content == ">s" || m.Content == ">stats" {
+		d.ChannelMessageSend(m.ChannelID, Stats())
 	}
 
 	// If the message is ">help" return help
