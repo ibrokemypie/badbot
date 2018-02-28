@@ -5,8 +5,16 @@ import (
 	"strconv"
 )
 
+var mems runtime.MemStats
+
 func Mem() string {
-	var mem runtime.MemStats
-	runtime.ReadMemStats(&mem)
-	return strconv.Itoa(int(mem.Alloc/1000)) + "KB"
+	runtime.ReadMemStats(&mems)
+
+	var mem string
+	if mems.Alloc > 1000000 {
+		mem = strconv.Itoa(int(mems.Alloc/1000000)) + "MB"
+	} else {
+		mem = strconv.Itoa(int(mems.Alloc/1000)) + "KB"
+	}
+	return mem
 }
