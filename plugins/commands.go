@@ -2,7 +2,6 @@ package plugins
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -10,27 +9,27 @@ import (
 )
 
 func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree) {
-	// If the message is ">git" link to github
-	if strings.HasPrefix(m.Content, ">spin ") || strings.HasPrefix(m.Content, ">spinner ") {
-		s := strings.SplitAfterN(m.Content, " ", 2)
-		fmt.Println(s)
-
-		n, err := strconv.Atoi(s[1])
-		if err != nil {
-			fmt.Println(err)
-			d.ChannelMessageSend(m.ChannelID, err.Error())
-			return
-		}
-
-		Spinner(d, m, n)
-	}
+	// If the message is ">spin" send a spinner
+	// if strings.HasPrefix(m.Content, ">spin ") || strings.HasPrefix(m.Content, ">spinner ") {
+	// s := strings.SplitAfterN(m.Content, " ", 2)
+	// fmt.Println(s)
+	//
+	// n, err := strconv.Atoi(s[1])
+	// if err != nil {
+	// fmt.Println(err)
+	// d.ChannelMessageSend(m.ChannelID, err.Error())
+	// return
+	// }
+	//
+	// Spinner(d, m, n)
+	// }
 
 	// If the message is ">git" link to github
 	if m.Content == ">git" || m.Content == ">github" {
 		d.ChannelMessageSend(m.ChannelID, "https://github.com/ibrokemypie/badbot")
 	}
 
-	// If the message is ">git" link to github
+	// If the message is ">stats" send ram and cpu usage
 	if m.Content == ">s" || m.Content == ">stats" {
 		d.ChannelMessageSend(m.ChannelID, Stats())
 	}
