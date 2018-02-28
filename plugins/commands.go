@@ -30,6 +30,11 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 		d.ChannelMessageSend(m.ChannelID, "https://github.com/ibrokemypie/badbot")
 	}
 
+	// If the message is ">git" link to github
+	if m.Content == ">mem" || m.Content == ">memory" {
+		d.ChannelMessageSend(m.ChannelID, Mem())
+	}
+
 	// If the message is ">help" return help
 	if m.Content == ">help" || m.Content == ">h" {
 		d.ChannelMessageSend(m.ChannelID, "Only god can save you.\n Try >git")
