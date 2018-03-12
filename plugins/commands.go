@@ -82,6 +82,13 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 			d.ChannelMessageSend(m.ChannelID, (s[1]))
 		}
 
+		//If message starts with >search, google the following text
+		if strings.HasPrefix(m.Content, ">search ") || strings.HasPrefix(m.Content, ">google ") {
+			s := strings.SplitAfterN(m.Content, " ", 2)
+			fmt.Println(s)
+			d.ChannelMessageSend(m.ChannelID, Search(s[1], 1, conf.Get("apiKey").(string), conf.Get("engineid").(string)))
+		}
+
 		//If message starts with >game, say the following text
 		if strings.HasPrefix(m.Content, ">pfp") || strings.HasPrefix(m.Content, ">avatar") {
 			fmt.Println(m.Content)
