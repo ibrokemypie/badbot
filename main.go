@@ -75,6 +75,7 @@ func main() {
 
 	//Add handlers
 	discord.AddHandler(messageCreate)
+	//discord.AddHandler(messageReactionAdd)
 
 	// Wait here until CTRL-C or other term signal is received.
 	fmt.Println("Press Control + C to quit")
@@ -113,4 +114,15 @@ func messageCreate(d *discordgo.Session, m *discordgo.MessageCreate) {
 		go plugins.Replies(d, m, conf)
 	}
 	go plugins.Commands(d, m, conf)
+}
+
+func messageReactionAdd(d *discordgo.Session, m *discordgo.MessageReactionAdd) {
+	fmt.Println(m.MessageID)
+	fmt.Println(m.Emoji.ID)
+	fmt.Println(m.Emoji.Name)
+	if m.Emoji.ID != "" {
+		d.MessageReactionAdd(m.ChannelID, m.MessageID, m.Emoji.Name+":"+m.Emoji.ID)
+	} else {
+		d.MessageReactionAdd(m.ChannelID, m.MessageID, m.Emoji.Name)
+	}
 }

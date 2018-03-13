@@ -86,7 +86,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 		if strings.HasPrefix(m.Content, ">search ") || strings.HasPrefix(m.Content, ">google ") {
 			s := strings.SplitAfterN(m.Content, " ", 2)
 			fmt.Println(s)
-			d.ChannelMessageSend(m.ChannelID, Search(s[1], 1, conf.Get("apiKey").(string), conf.Get("engineid").(string)))
+			go Search(s[1], 10, conf.Get("apiKey").(string), conf.Get("engineid").(string), d, m)
 		}
 
 		//If message starts with >game, say the following text
