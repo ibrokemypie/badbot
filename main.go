@@ -106,6 +106,7 @@ func botInit(s *discordgo.Session) {
 	if workchan != "" {
 		go plugins.Work(s, conf.Get("workchan").(string))
 	}
+	go plugins.Googleinit(s)
 }
 
 // message is created on any channel that the autenticated bot has access to.
