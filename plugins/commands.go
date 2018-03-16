@@ -39,11 +39,6 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 		d.ChannelMessageSend(m.ChannelID, "Only god can save you.\n Try >git")
 	}
 
-	// If the message is ">nangs" define nangs"
-	if m.Content == ">nang" || m.Content == ">nangs" {
-		d.ChannelMessageSend(m.ChannelID, "```\nAn Australian slang term for a Nitrous oxide bulb, derived from the sound distortion that occurs when one is under the influence of the drug.\n```")
-	}
-
 	// If the message is ">qoohme" link to qooh.me "
 	if m.Content == ">qooh" || m.Content == ">qoohme" {
 		d.ChannelMessageSend(m.ChannelID, "http://qooh.me/ibrokemypie")
@@ -72,6 +67,31 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 	// If the message is ">pong" reply with "Ping!"
 	if m.Content == ">pong" {
 		d.ChannelMessageSend(m.ChannelID, "ping")
+	}
+
+	if strings.HasPrefix(m.Content, ">>> ") {
+		s := strings.SplitAfterN(m.Content, " ", 3)
+		if len(s) < 3 {
+			d.ChannelMessageSend(m.ChannelID, "Usage is ``>>> name quote``")
+			return
+		}
+		fmt.Println(s)
+		s[1] = strings.TrimSpace(s[1])
+		s[2] = strings.Replace(s[2], "\n", "\\n", -1)
+		WriteQuote(s[1], s[2])
+		d.ChannelMessageSend(m.ChannelID, "Quote "+s[1]+" added.")
+	}
+
+	if strings.HasPrefix(m.Content, ">> ") {
+		s := strings.SplitAfterN(m.Content, " ", 2)
+		if len(s) < 2 {
+			d.ChannelMessageSend(m.ChannelID, "Usage is ``>> quotename``")
+			return
+		}
+		fmt.Println(s)
+		q := ReadQuote(s[1])
+		q = strings.Replace(q, "\\n", "\n", -1)
+		d.ChannelMessageSend(m.ChannelID, "``"+s[1]+"``"+": \n"+q)
 	}
 
 	if m.Author.ID == conf.Get("ownerid").(string) {
