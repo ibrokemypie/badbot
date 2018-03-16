@@ -12,7 +12,7 @@ import (
 func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree) {
 	// If the message is ">spin" send a spinner
 	// if strings.HasPrefix(m.Content, ">spin ") || strings.HasPrefix(m.Content, ">spinner ") {
-	// s := strings.SplitAfterN(m.Content, " ", 2)
+	// s := strings.SplitN(m.Content, " ", 2)
 	// fmt.Println(s)
 	//
 	// n, err := strconv.Atoi(s[1])
@@ -71,20 +71,19 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 	}
 
 	if strings.HasPrefix(m.Content, ">>> ") {
-		s := strings.SplitAfterN(m.Content, " ", 3)
+		s := strings.SplitN(m.Content, " ", 3)
 		if len(s) < 3 {
 			d.ChannelMessageSend(m.ChannelID, "Usage is ``>>> name quote``")
 			return
 		}
 		fmt.Println(s)
-		s[1] = strings.TrimSpace(s[1])
 		s[2] = strings.Replace(s[2], "\n", "\\n", -1)
 		WriteQuote(s[1], s[2])
 		d.ChannelMessageSend(m.ChannelID, "Quote "+s[1]+" added.")
 	}
 
 	if strings.HasPrefix(m.Content, ">> ") {
-		s := strings.SplitAfterN(m.Content, " ", 2)
+		s := strings.SplitN(m.Content, " ", 2)
 		if len(s) != 2 {
 			d.ChannelMessageSend(m.ChannelID, "Usage is ``>> quotename``")
 			return
@@ -100,7 +99,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 	}
 
 	if strings.HasPrefix(m.Content, ">qid ") || strings.HasPrefix(m.Content, ">quoteid ") {
-		s := strings.SplitAfterN(m.Content, " ", 2)
+		s := strings.SplitN(m.Content, " ", 2)
 		if len(s) != 2 {
 			d.ChannelMessageSend(m.ChannelID, "Usage is ``> quoteid``")
 			return
@@ -116,7 +115,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 	}
 
 	if strings.HasPrefix(m.Content, ">qdel ") || strings.HasPrefix(m.Content, ">qrm ") {
-		s := strings.SplitAfterN(m.Content, " ", 2)
+		s := strings.SplitN(m.Content, " ", 2)
 		if len(s) != 2 {
 			d.ChannelMessageSend(m.ChannelID, "Usage is ``> qdel``")
 			return
@@ -129,14 +128,14 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 	if m.Author.ID == conf.Get("ownerid").(string) {
 		//If message starts with >say, say the following text
 		if strings.HasPrefix(m.Content, ">say ") {
-			s := strings.SplitAfterN(m.Content, " ", 2)
+			s := strings.SplitN(m.Content, " ", 2)
 			fmt.Println(s)
 			d.ChannelMessageSend(m.ChannelID, (s[1]))
 		}
 
 		//If message starts with >search, google the following text
 		if strings.HasPrefix(m.Content, ">search ") || strings.HasPrefix(m.Content, ">google ") {
-			s := strings.SplitAfterN(m.Content, " ", 2)
+			s := strings.SplitN(m.Content, " ", 2)
 			fmt.Println(s)
 			go Search(s[1], 10, conf.Get("apiKey").(string), conf.Get("engineid").(string), d, m)
 		}
@@ -158,7 +157,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 
 		//If message starts with >game, say the following text
 		if strings.HasPrefix(m.Content, ">game ") || strings.HasPrefix(m.Content, ">status ") {
-			s := strings.SplitAfterN(m.Content, " ", 2)
+			s := strings.SplitN(m.Content, " ", 2)
 			fmt.Println(s)
 			conf.Set("status", s[1])
 			d.UpdateStatus(0, s[1])
@@ -166,7 +165,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 
 		//If message starts with >game, say the following text
 		if strings.HasPrefix(m.Content, ">name ") || strings.HasPrefix(m.Content, ">nick ") {
-			s := strings.SplitAfterN(m.Content, " ", 2)
+			s := strings.SplitN(m.Content, " ", 2)
 			fmt.Println(s)
 			guilds, err := d.UserGuilds(100, "", "")
 			if err != nil {
