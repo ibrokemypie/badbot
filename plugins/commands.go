@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -89,9 +90,13 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 			return
 		}
 		fmt.Println(s)
-		q := ReadQuote(s[1])
-		q = strings.Replace(q, "\\n", "\n", -1)
-		d.ChannelMessageSend(m.ChannelID, "``"+s[1]+"``"+": \n"+q)
+		q, i := ReadQuote(s[1])
+		if i != 0 {
+			q = strings.Replace(q, "\\n", "\n", -1)
+			d.ChannelMessageSend(m.ChannelID, "``"+s[1]+" "+strconv.Itoa(i)+"``"+": \n"+q)
+		} else {
+			d.ChannelMessageSend(m.ChannelID, "No quotes with that name found.")
+		}
 	}
 
 	if m.Author.ID == conf.Get("ownerid").(string) {

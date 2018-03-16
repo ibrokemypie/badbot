@@ -1,67 +1,95 @@
 package plugins
 
 import (
-	"bufio"
-	"bytes"
-	"io"
+	"encoding/gob"
 	"math/rand"
 	"os"
 )
 
+var quotes = make(map[string]map[int]string)
+
+var quoteids []string
+var nameid = make(map[string][]int)
+var idquote = make(map[int]string)
+
 func WriteQuote(key string, value string) {
-	f, err := os.OpenFile("quotes/"+key, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	var i int
+	i, quoteids = len(quoteids)+1, append(quoteids, key)
+
+	nameid[key] = append(nameid[key], i)
+	idquote[i] = value
+}
+
+func ReadQuote(key string) (string, int) {
+	qlen := len(nameid[key])
+
+	if qlen == 0 {
+		return "", 0
+	}
+	chosenq := rand.Intn(qlen)
+	id := nameid[key][chosenq]
+
+	text := idquote[id]
+	return text, id
+}
+
+func SaveData() {
+	encodeFile, err := os.Create("quotes/quoteids.gob")
+	if err != nil {
+		panic(err)
+	}
+	encoder := gob.NewEncoder(encodeFile)
+	if err := encoder.Encode(quoteids); err != nil {
+		panic(err)
+	}
+	encodeFile.Close()
+
+	encodeFile, err = os.Create("quotes/nameid.gob")
+	if err != nil {
+		panic(err)
+	}
+	encoder = gob.NewEncoder(encodeFile)
+	if err = encoder.Encode(nameid); err != nil {
+		panic(err)
+	}
+	encodeFile.Close()
+
+	encodeFile, err = os.Create("quotes/idquote.gob")
+	if err != nil {
+		panic(err)
+	}
+	encoder = gob.NewEncoder(encodeFile)
+	if err = encoder.Encode(idquote); err != nil {
+		panic(err)
+	}
+	encodeFile.Close()
+}
+
+func LoadData() {
+	decodeFile, err := os.Open("quotes/quoteids.gob")
 	if err != nil {
 		panic(err)
 	}
 
-	defer f.Close()
+	decoder := gob.NewDecoder(decodeFile)
+	decoder.Decode(&quoteids)
+	decodeFile.Close()
 
-	if _, err = f.WriteString(value + "\n"); err != nil {
+	decodeFile, err = os.Open("quotes/nameid.gob")
+	if err != nil {
 		panic(err)
 	}
-}
-func lineCounter(r io.Reader) (int, error) {
-	buf := make([]byte, 32*1024)
-	count := 0
-	lineSep := []byte{'\n'}
 
-	for {
-		c, err := r.Read(buf)
-		count += bytes.Count(buf[:c], lineSep)
+	decoder = gob.NewDecoder(decodeFile)
+	decoder.Decode(&nameid)
+	decodeFile.Close()
 
-		switch {
-		case err == io.EOF:
-			return count, nil
-
-		case err != nil:
-			return count, err
-		}
-	}
-}
-
-func ReadQuote(key string) string {
-	fileHandle, _ := os.Open("quotes/" + key)
-	lines, err := lineCounter(fileHandle)
-	fileHandle.Close()
-
+	decodeFile, err = os.Open("quotes/idquote.gob")
 	if err != nil {
-		return "No quotes exist under that name."
+		panic(err)
 	}
+	decoder = gob.NewDecoder(decodeFile)
+	decoder.Decode(&idquote)
+	decodeFile.Close()
 
-	fileHandle, _ = os.Open("quotes/" + key)
-	scanner := bufio.NewScanner(fileHandle)
-
-	line := 0
-	text := ""
-
-	chosenline := rand.Intn(lines) + 1
-
-	for scanner.Scan() {
-		line++
-		if line == chosenline {
-			text = scanner.Text()
-		}
-	}
-	fileHandle.Close()
-	return text
 }
