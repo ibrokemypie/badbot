@@ -85,7 +85,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 
 	if strings.HasPrefix(m.Content, ">> ") {
 		s := strings.SplitAfterN(m.Content, " ", 2)
-		if len(s) < 2 {
+		if len(s) != 2 {
 			d.ChannelMessageSend(m.ChannelID, "Usage is ``>> quotename``")
 			return
 		}
@@ -96,6 +96,22 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 			d.ChannelMessageSend(m.ChannelID, "``"+s[1]+" "+strconv.Itoa(i)+"``"+": \n"+q)
 		} else {
 			d.ChannelMessageSend(m.ChannelID, "No quotes with that name found.")
+		}
+	}
+
+	if strings.HasPrefix(m.Content, ">qid ") || strings.HasPrefix(m.Content, ">quoteid ") {
+		s := strings.SplitAfterN(m.Content, " ", 2)
+		if len(s) != 2 {
+			d.ChannelMessageSend(m.ChannelID, "Usage is ``>> quoteid``")
+			return
+		}
+		fmt.Println(s)
+		q, i, n := ReadQuoteID(s[1])
+		if i != 0 {
+			q = strings.Replace(q, "\\n", "\n", -1)
+			d.ChannelMessageSend(m.ChannelID, "``"+n+" "+strconv.Itoa(i)+"``"+": \n"+q)
+		} else {
+			d.ChannelMessageSend(m.ChannelID, q)
 		}
 	}
 

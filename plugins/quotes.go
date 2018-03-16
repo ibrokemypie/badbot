@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"math/rand"
 	"os"
+	"strconv"
 )
 
 var quotes = make(map[string]map[int]string)
@@ -31,6 +32,19 @@ func ReadQuote(key string) (string, int) {
 
 	text := idquote[id]
 	return text, id
+}
+
+func ReadQuoteID(id string) (string, int, string) {
+	rid, err := strconv.Atoi(id)
+	if err != nil {
+		return "Not a Number.", 0, ""
+	}
+	if idquote[rid] != "" {
+		text := idquote[rid]
+		qname := quoteids[rid]
+		return text, rid, qname
+	}
+	return "No quotes with that ID found.", 0, ""
 }
 
 func SaveData() {
