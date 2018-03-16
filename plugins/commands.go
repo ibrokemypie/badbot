@@ -102,7 +102,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 	if strings.HasPrefix(m.Content, ">qid ") || strings.HasPrefix(m.Content, ">quoteid ") {
 		s := strings.SplitAfterN(m.Content, " ", 2)
 		if len(s) != 2 {
-			d.ChannelMessageSend(m.ChannelID, "Usage is ``>> quoteid``")
+			d.ChannelMessageSend(m.ChannelID, "Usage is ``> quoteid``")
 			return
 		}
 		fmt.Println(s)
@@ -113,6 +113,17 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 		} else {
 			d.ChannelMessageSend(m.ChannelID, q)
 		}
+	}
+
+	if strings.HasPrefix(m.Content, ">qdel ") || strings.HasPrefix(m.Content, ">qrm ") {
+		s := strings.SplitAfterN(m.Content, " ", 2)
+		if len(s) != 2 {
+			d.ChannelMessageSend(m.ChannelID, "Usage is ``> qdel``")
+			return
+		}
+		fmt.Println(s)
+		r := RemoveQuote(s[1])
+		d.ChannelMessageSend(m.ChannelID, r)
 	}
 
 	if m.Author.ID == conf.Get("ownerid").(string) {

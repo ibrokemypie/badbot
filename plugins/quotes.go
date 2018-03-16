@@ -7,15 +7,16 @@ import (
 	"strconv"
 )
 
-var quotes = make(map[string]map[int]string)
-
-var quoteids []string
+var numquotes int
+var quoteids = make(map[int]string)
 var nameid = make(map[string][]int)
 var idquote = make(map[int]string)
 
 func WriteQuote(key string, value string) {
 	var i int
-	i, quoteids = len(quoteids)+1, append(quoteids, key)
+	numquotes++
+	i = numquotes
+	quoteids[i] = key
 
 	nameid[key] = append(nameid[key], i)
 	idquote[i] = value
@@ -47,13 +48,40 @@ func ReadQuoteID(id string) (string, int, string) {
 	return "No quotes with that ID found.", 0, ""
 }
 
+func RemoveQuote(id string) string {
+	rid, err := strconv.Atoi(id)
+	if err != nil {
+		return "Not a Number."
+	}
+
+	if idquote[rid] != "" {
+		qname := quoteids[rid]
+
+		delete(quoteids, rid)
+		delete(nameid, qname)
+		delete(idquote, rid)
+		return "Quote removed."
+	}
+	return "No quotes with that ID found."
+}
+
 func SaveData() {
-	encodeFile, err := os.Create("quotes/quoteids.gob")
+	encodeFile, err := os.Create("quotes/numquotes.gob")
 	if err != nil {
 		panic(err)
 	}
 	encoder := gob.NewEncoder(encodeFile)
-	if err := encoder.Encode(quoteids); err != nil {
+	if err := encoder.Encode(numquotes); err != nil {
+		panic(err)
+	}
+	encodeFile.Close()
+
+	encodeFile, err = os.Create("quotes/quoteids.gob")
+	if err != nil {
+		panic(err)
+	}
+	encoder = gob.NewEncoder(encodeFile)
+	if err = encoder.Encode(quoteids); err != nil {
 		panic(err)
 	}
 	encodeFile.Close()
@@ -80,12 +108,21 @@ func SaveData() {
 }
 
 func LoadData() {
-	decodeFile, err := os.Open("quotes/quoteids.gob")
+	decodeFile, err := os.Open("quotes/numquotes.gob")
 	if err != nil {
 		panic(err)
 	}
 
 	decoder := gob.NewDecoder(decodeFile)
+	decoder.Decode(&numquotes)
+	decodeFile.Close()
+
+	decodeFile, err = os.Open("quotes/quoteids.gob")
+	if err != nil {
+		panic(err)
+	}
+
+	decoder = gob.NewDecoder(decodeFile)
 	decoder.Decode(&quoteids)
 	decodeFile.Close()
 
