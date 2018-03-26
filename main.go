@@ -12,16 +12,16 @@ import (
 )
 
 var (
-	confFile = "config.toml"
-	conf     *toml.Tree
-	token    string
-	ownerid  string
-	nickname string
-	status   string
-	image    string
-	workchan string
-	replies  bool
-	err      error
+	confFile     = "config.toml"
+	conf         *toml.Tree
+	token        string
+	nickname     string
+	trustedusers []interface{}
+	status       string
+	image        string
+	workchan     string
+	replies      bool
+	err          error
 )
 
 func config() {
@@ -32,12 +32,14 @@ func config() {
 	}
 
 	token = conf.Get("token").(string)
-	ownerid = conf.Get("ownerid").(string)
+	trustedusers = conf.Get("trustedusers").([]interface{})
 	nickname = conf.Get("nickname").(string)
 	status = conf.Get("status").(string)
 	image = conf.Get("image").(string)
 	replies = conf.Get("replies").(bool)
 	workchan = conf.GetDefault("workchan", "").(string)
+
+	fmt.Println(trustedusers)
 }
 
 func main() {
@@ -116,7 +118,7 @@ func messageCreate(d *discordgo.Session, m *discordgo.MessageCreate) {
 	if replies == true {
 		go plugins.Replies(d, m, conf)
 	}
-	go plugins.Commands(d, m, conf)
+	go plugins.Commands(d, m, conf, trustedusers)
 }
 
 func messageReactionAdd(d *discordgo.Session, m *discordgo.MessageReactionAdd) {

@@ -9,7 +9,7 @@ import (
 	toml "github.com/pelletier/go-toml"
 )
 
-func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree) {
+func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree, trustedusers []interface{}) {
 	// If the message is ">spin" send a spinner
 	// if strings.HasPrefix(m.Content, ">spin ") || strings.HasPrefix(m.Content, ">spinner ") {
 	// s := strings.SplitN(m.Content, " ", 2)
@@ -125,63 +125,65 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 		d.ChannelMessageSend(m.ChannelID, r)
 	}
 
-	if m.Author.ID == conf.Get("ownerid").(string) {
-		//If message starts with >say, say the following text
-		if strings.HasPrefix(m.Content, ">say ") {
-			s := strings.SplitN(m.Content, " ", 2)
-			fmt.Println(s)
-			d.ChannelMessageSend(m.ChannelID, (s[1]))
-		}
-
-		//If message starts with >search, google the following text
-		if strings.HasPrefix(m.Content, ">search ") || strings.HasPrefix(m.Content, ">google ") {
-			s := strings.SplitN(m.Content, " ", 2)
-			fmt.Println(s)
-			go SearchGoogle(s[1], 10, conf.Get("googleapi").(string), conf.Get("engineid").(string), d, m)
-		}
-
-		//If message starts with >yt, youtube search the following text
-		if strings.HasPrefix(m.Content, ">yt ") || strings.HasPrefix(m.Content, ">youtube ") {
-			s := strings.SplitN(m.Content, " ", 2)
-			fmt.Println(s)
-			go SearchYoutube(s[1], 10, conf.Get("youtubeapi").(string), d, m)
-		}
-
-		//If message starts with >game, say the following text
-		if strings.HasPrefix(m.Content, ">pfp") || strings.HasPrefix(m.Content, ">avatar") {
-			fmt.Println(m.Content)
-			img := m.Message.Attachments[0].URL
-
-			baseimg := EncodeImage(img)
-
-			conf.Set("image", baseimg)
-			_, err := d.UserUpdate("", "", "", baseimg, "")
-			if err != nil {
-				fmt.Println(err)
-				d.ChannelMessageSend(m.ChannelID, err.Error())
+	for i := range trustedusers {
+		if trustedusers[i] == m.Author.ID {
+			//If message starts with >say, say the following text
+			if strings.HasPrefix(m.Content, ">say ") {
+				s := strings.SplitN(m.Content, " ", 2)
+				fmt.Println(s)
+				d.ChannelMessageSend(m.ChannelID, (s[1]))
 			}
-		}
 
-		//If message starts with >game, say the following text
-		if strings.HasPrefix(m.Content, ">game ") || strings.HasPrefix(m.Content, ">status ") {
-			s := strings.SplitN(m.Content, " ", 2)
-			fmt.Println(s)
-			conf.Set("status", s[1])
-			d.UpdateStatus(0, s[1])
-		}
-
-		//If message starts with >game, say the following text
-		if strings.HasPrefix(m.Content, ">name ") || strings.HasPrefix(m.Content, ">nick ") {
-			s := strings.SplitN(m.Content, " ", 2)
-			fmt.Println(s)
-			guilds, err := d.UserGuilds(100, "", "")
-			if err != nil {
-				fmt.Println(err)
-				return
+			//If message starts with >search, google the following text
+			if strings.HasPrefix(m.Content, ">search ") || strings.HasPrefix(m.Content, ">google ") {
+				s := strings.SplitN(m.Content, " ", 2)
+				fmt.Println(s)
+				go SearchGoogle(s[1], 10, conf.Get("googleapi").(string), conf.Get("engineid").(string), d, m)
 			}
-			for _, guild := range guilds {
-				conf.Set("nickname", s[1])
-				d.GuildMemberNickname(guild.ID, "@me", s[1])
+
+			//If message starts with >yt, youtube search the following text
+			if strings.HasPrefix(m.Content, ">yt ") || strings.HasPrefix(m.Content, ">youtube ") {
+				s := strings.SplitN(m.Content, " ", 2)
+				fmt.Println(s)
+				go SearchYoutube(s[1], 10, conf.Get("youtubeapi").(string), d, m)
+			}
+
+			//If message starts with >game, say the following text
+			if strings.HasPrefix(m.Content, ">pfp") || strings.HasPrefix(m.Content, ">avatar") {
+				fmt.Println(m.Content)
+				img := m.Message.Attachments[0].URL
+
+				baseimg := EncodeImage(img)
+
+				conf.Set("image", baseimg)
+				_, err := d.UserUpdate("", "", "", baseimg, "")
+				if err != nil {
+					fmt.Println(err)
+					d.ChannelMessageSend(m.ChannelID, err.Error())
+				}
+			}
+
+			//If message starts with >game, say the following text
+			if strings.HasPrefix(m.Content, ">game ") || strings.HasPrefix(m.Content, ">status ") {
+				s := strings.SplitN(m.Content, " ", 2)
+				fmt.Println(s)
+				conf.Set("status", s[1])
+				d.UpdateStatus(0, s[1])
+			}
+
+			//If message starts with >game, say the following text
+			if strings.HasPrefix(m.Content, ">name ") || strings.HasPrefix(m.Content, ">nick ") {
+				s := strings.SplitN(m.Content, " ", 2)
+				fmt.Println(s)
+				guilds, err := d.UserGuilds(100, "", "")
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				for _, guild := range guilds {
+					conf.Set("nickname", s[1])
+					d.GuildMemberNickname(guild.ID, "@me", s[1])
+				}
 			}
 		}
 	}

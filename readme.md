@@ -14,7 +14,7 @@
 Configuration is done with a toml file called ``config.toml`` with the following contents:
 ```
 token = "the bot's token to authenticate" string
-ownerid = "the user id to respond to owner only commands" string
+trustedusers = "array of user ids to allow trusted commands to" []string
 nickname = "the bot's nickname" string
 image = "base64 encoded image for profile picture" string
 status = "the bot's status" string
@@ -57,7 +57,7 @@ youtubeapi = "your google api key with youtube search enabled" string
 ``>qdel id`` removes quote with given id
 
 
-#### Owner only commands
+#### trusted user only commands
 ``>search term`` searches google for term and displays 10 pages of results
 
 ``>yt term`` searches youtube for term and displays 10 pages of results
