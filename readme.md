@@ -22,7 +22,8 @@ status = "the bot's status" string
 replies = "whether to enable replies plugin" bool
 
 engineid = "engineid of google custom search engine" string
-apiKey = "your google custom search engine api key" string
+googleapi = "your google custom search engine api key" string
+youtubeapi = "your google api key with youtube search enabled" string
 ```
 
 
@@ -58,6 +59,8 @@ apiKey = "your google custom search engine api key" string
 
 #### Owner only commands
 ``>search term`` searches google for term and displays 10 pages of results
+
+``>yt term`` searches youtube for term and displays 10 pages of results
 
 
 ``>say words`` makes the bot say words

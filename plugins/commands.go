@@ -137,7 +137,14 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree)
 		if strings.HasPrefix(m.Content, ">search ") || strings.HasPrefix(m.Content, ">google ") {
 			s := strings.SplitN(m.Content, " ", 2)
 			fmt.Println(s)
-			go Search(s[1], 10, conf.Get("apiKey").(string), conf.Get("engineid").(string), d, m)
+			go SearchGoogle(s[1], 10, conf.Get("googleapi").(string), conf.Get("engineid").(string), d, m)
+		}
+
+		//If message starts with >yt, youtube search the following text
+		if strings.HasPrefix(m.Content, ">yt ") || strings.HasPrefix(m.Content, ">youtube ") {
+			s := strings.SplitN(m.Content, " ", 2)
+			fmt.Println(s)
+			go SearchYoutube(s[1], 10, conf.Get("youtubeapi").(string), d, m)
 		}
 
 		//If message starts with >game, say the following text

@@ -107,7 +107,7 @@ func botInit(s *discordgo.Session) {
 	if workchan != "" {
 		go plugins.Work(s, conf.Get("workchan").(string))
 	}
-	plugins.Googleinit(s)
+	plugins.ButtonInit(s)
 	plugins.LoadData()
 }
 
