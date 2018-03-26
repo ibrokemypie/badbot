@@ -20,6 +20,7 @@ func WriteQuote(key string, value string) {
 
 	nameid[key] = append(nameid[key], i)
 	idquote[i] = value
+	SaveData()
 }
 
 func ReadQuote(key string) (string, int) {
@@ -60,6 +61,7 @@ func RemoveQuote(id string) string {
 		delete(quoteids, rid)
 		delete(nameid, qname)
 		delete(idquote, rid)
+		SaveData()
 		return "Quote removed."
 	}
 	return "No quotes with that ID found."
