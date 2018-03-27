@@ -12,33 +12,36 @@ import (
 )
 
 var (
-	confFile     = "config.toml"
-	conf         *toml.Tree
-	token        string
-	nickname     string
-	trustedusers []interface{}
-	status       string
-	image        string
-	workchan     string
-	replies      bool
-	err          error
+	conf            *toml.Tree
+	token           string
+	nickname        string
+	trusteduserconf []interface{}
+	status          string
+	image           string
+	workchan        string
+	replies         bool
+	err             error
+	trustedusers    = make(map[string]bool)
 )
 
 func config() {
-	conf, err = toml.LoadFile(confFile)
+	conf, err = toml.LoadFile("config.toml")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	token = conf.Get("token").(string)
-	trustedusers = conf.Get("trustedusers").([]interface{})
 	nickname = conf.Get("nickname").(string)
 	status = conf.Get("status").(string)
 	image = conf.Get("image").(string)
 	replies = conf.Get("replies").(bool)
 	workchan = conf.GetDefault("workchan", "").(string)
+	trusteduserconf = conf.Get("trustedusers").([]interface{})
 
+	for _, user := range trusteduserconf {
+		trustedusers[user.(string)] = true
+	}
 	fmt.Println(trustedusers)
 }
 
@@ -77,7 +80,6 @@ func main() {
 
 	//Add handlers
 	discord.AddHandler(messageCreate)
-	//discord.AddHandler(messageReactionAdd)
 
 	// Wait here until CTRL-C or other term signal is received.
 	fmt.Println("Press Control + C to quit")
@@ -87,9 +89,21 @@ func main() {
 
 	// Cleanly close down the Discord session.
 	discord.Close()
-	f, _ := os.Create(confFile)
-	f.WriteString(conf.String())
+
+	var trusted = make([]interface{}, len(trustedusers))
+	var i = 0
+	for user, _ := range trustedusers {
+		trusted[i] = user
+		i++
+	}
+	conf.Set("trustedusers", trusted)
+
+	f, _ := os.Create("config.toml")
+	_, err = f.WriteString(conf.String())
 	plugins.SaveData()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }
 
 func botInit(s *discordgo.Session) {
