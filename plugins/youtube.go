@@ -58,14 +58,8 @@ func SearchYoutube(q string, n int, apiKey string, d *discordgo.Session, m *disc
 		d.ChannelMessageSend(m.ChannelID, "No results.")
 		return
 	}
-	embed := discordgo.MessageEmbed{
-		Title:  results[0].title,
-		Image:  &discordgo.MessageEmbedImage{URL: results[0].thumbnail},
-		Color:  colour,
-		Footer: &discordgo.MessageEmbedFooter{Text: strconv.Itoa(results[0].number) + "/" + strconv.Itoa(returned)},
-		URL:    results[0].formattedUrl,
-	}
-	message, err := d.ChannelMessageSendEmbed(m.ChannelID, &embed)
+	mtext := results[0].title + "\n" + results[0].formattedUrl + "\n ``" + strconv.Itoa(results[0].number) + "/" + strconv.Itoa(returned) + "``"
+	message, err := d.ChannelMessageSend(m.ChannelID, mtext)
 	if err != nil {
 		d.ChannelMessageSend(m.ChannelID, err.Error())
 		return
