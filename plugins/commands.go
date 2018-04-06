@@ -51,6 +51,10 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 		d.ChannelMessageSend(m.ChannelID, "https://ibrokemypie.sarahah.com")
 	}
 
+	if m.Content == ">np" || m.Content == ">playing" {
+		d.ChannelMessageSendEmbed(m.ChannelID, lastfmPlaying(conf.Get("lastfmapi").(string), conf.Get("lastfmuser").(string)))
+	}
+
 	// If the message is ">woof" send randoim dog"
 	if m.Content == ">woof" || m.Content == ">dog" {
 		d.ChannelMessageSend(m.ChannelID, Woof())

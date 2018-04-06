@@ -24,6 +24,9 @@ replies = "whether to enable replies plugin" bool
 engineid = "engineid of google custom search engine" string
 googleapi = "your google custom search engine api key" string
 youtubeapi = "your google api key with youtube search enabled" string
+lastfmapi = "your lastfm api key" string
+lastfmuser = "your lastfm username" string
+
 ```
 
 
@@ -45,6 +48,9 @@ youtubeapi = "your google api key with youtube search enabled" string
 ``>woof`` sends a dog from random.dog
 
 ``>meow`` sends a cat from random.cat
+
+
+``>playing`` sends the currently playing track on last.fm
 
 
 
