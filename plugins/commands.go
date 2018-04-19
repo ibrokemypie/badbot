@@ -138,6 +138,21 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 			d.ChannelMessageSend(m.ChannelID, (s[1]))
 		}
 
+		//If message starts with >del, say the following text
+		if strings.HasPrefix(m.Content, ">del ") || strings.HasPrefix(m.Content, ">rm ") {
+			s := strings.Split(m.Content, " ")
+			fmt.Println(s)
+			var err error
+			if len(s) == 2 {
+				err = d.ChannelMessageDelete(m.ChannelID, s[1])
+			} else if len(s) == 3 {
+				err = d.ChannelMessageDelete(s[1], s[2])
+			}
+			if err != nil {
+				d.ChannelMessageSend(m.ChannelID, err.Error())
+			}
+		}
+
 		//If message starts with >search, google the following text
 		if strings.HasPrefix(m.Content, ">search ") || strings.HasPrefix(m.Content, ">google ") {
 			s := strings.SplitN(m.Content, " ", 2)

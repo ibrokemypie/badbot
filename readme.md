@@ -71,6 +71,10 @@ lastfmuser = "your lastfm username" string
 
 ``>say words`` makes the bot say words
 
+``>rm messageid`` deletes message from bot with that id in the channel command is sent in
+
+``>rm channelid messageid`` deletes message from bot with that id in the provided channel
+
 ``>game words`` sets the bot's game to words
 
 ``>status words`` sets the bot's status to words
