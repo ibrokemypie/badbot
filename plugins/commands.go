@@ -51,6 +51,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 		d.ChannelMessageSend(m.ChannelID, "https://ibrokemypie.sarahah.com")
 	}
 
+	// If message is ">np" send now playing spotify track
 	if m.Content == ">np" || m.Content == ">playing" {
 		d.ChannelMessageSendEmbed(m.ChannelID, lastfmPlaying(conf.Get("lastfmapi").(string), conf.Get("lastfmuser").(string)))
 	}
@@ -75,6 +76,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 		d.ChannelMessageSend(m.ChannelID, "ping")
 	}
 
+	// If starts with >>> add quote with given name and content
 	if strings.HasPrefix(m.Content, ">>> ") {
 		s := strings.SplitN(m.Content, " ", 3)
 		if len(s) < 3 {
@@ -87,6 +89,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 		d.ChannelMessageSend(m.ChannelID, "Quote "+s[1]+" added.")
 	}
 
+	// If starts with >> get quote with given name
 	if strings.HasPrefix(m.Content, ">> ") {
 		s := strings.SplitN(m.Content, " ", 2)
 		if len(s) != 2 {
@@ -103,6 +106,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 		}
 	}
 
+	// Get quote with given ID
 	if strings.HasPrefix(m.Content, ">qid ") || strings.HasPrefix(m.Content, ">quoteid ") {
 		s := strings.SplitN(m.Content, " ", 2)
 		if len(s) != 2 {
@@ -119,6 +123,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 		}
 	}
 
+	// Delete quote with given ID
 	if strings.HasPrefix(m.Content, ">qdel ") || strings.HasPrefix(m.Content, ">qrm ") {
 		s := strings.SplitN(m.Content, " ", 2)
 		if len(s) != 2 {
@@ -130,12 +135,13 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 		d.ChannelMessageSend(m.ChannelID, r)
 	}
 
+	//Only run these commands if user trusted
 	if trustedusers[m.Author.ID] {
 		//If message starts with >say, say the following text
 		if strings.HasPrefix(m.Content, ">say ") {
 			s := strings.SplitN(m.Content, " ", 2)
 			fmt.Println(s)
-			d.ChannelMessageSend(m.ChannelID, (s[1]))
+			d.ChannelMessageSend(m.ChannelID, s[1])
 		}
 
 		//If message starts with >del, say the following text
@@ -167,7 +173,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 			go SearchYoutube(s[1], 10, conf.Get("youtubeapi").(string), d, m)
 		}
 
-		//If message starts with >game, say the following text
+		//If message starts with >pfp set avatar to attached image
 		if strings.HasPrefix(m.Content, ">pfp") || strings.HasPrefix(m.Content, ">avatar") {
 			fmt.Println(m.Content)
 			img := m.Message.Attachments[0].URL
@@ -182,7 +188,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 			}
 		}
 
-		//If message starts with >game, say the following text
+		//If message starts with >game, set status to playing game
 		if strings.HasPrefix(m.Content, ">game ") || strings.HasPrefix(m.Content, ">status ") {
 			s := strings.SplitN(m.Content, " ", 2)
 			fmt.Println(s)
@@ -224,7 +230,7 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 			d.ChannelMessageSend(m.ChannelID, s)
 		}
 
-		//If message starts with >game, say the following text
+		//If message starts with >name change nick on all servers
 		if strings.HasPrefix(m.Content, ">name ") || strings.HasPrefix(m.Content, ">nick ") {
 			s := strings.SplitN(m.Content, " ", 2)
 			fmt.Println(s)
