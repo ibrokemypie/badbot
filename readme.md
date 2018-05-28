@@ -66,6 +66,8 @@ lastfmuser = "your lastfm username" string
 #### trusted user only commands
 ``>search term`` searches google for term and displays 10 pages of results
 
+``>image term`` searches google for term and displays 10 pages of image results
+
 ``>yt term`` searches youtube for term and displays 10 pages of results
 
 

@@ -166,6 +166,13 @@ func Commands(d *discordgo.Session, m *discordgo.MessageCreate, conf *toml.Tree,
 			go SearchGoogle(s[1], 10, conf.Get("googleapi").(string), conf.Get("engineid").(string), d, m)
 		}
 
+		//If message starts with >images, image search the following text
+		if strings.HasPrefix(m.Content, ">images ") || strings.HasPrefix(m.Content, ">image ") {
+			s := strings.SplitN(m.Content, " ", 2)
+			fmt.Println(s)
+			go SearchImages(s[1], 10, conf.Get("googleapi").(string), conf.Get("engineid").(string), d, m)
+		}
+
 		//If message starts with >yt, youtube search the following text
 		if strings.HasPrefix(m.Content, ">yt ") || strings.HasPrefix(m.Content, ">youtube ") {
 			s := strings.SplitN(m.Content, " ", 2)

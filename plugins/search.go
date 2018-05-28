@@ -15,6 +15,7 @@ type result struct {
 	snippet      string
 	formattedUrl string
 	thumbnail    string
+	image        string
 }
 
 type Query struct {
@@ -75,8 +76,23 @@ func buttons(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
 					return
 				}
 				return
-			}
+			} else if queries[m.MessageID].qtype == "image" {
+				queries[m.MessageID] = Query{author: queries[m.MessageID].author, messageid: queries[m.MessageID].messageid, number: i, results: queries[m.MessageID].results, returned: queries[m.MessageID].returned, colour: queries[m.MessageID].colour, qtype: queries[m.MessageID].qtype}
 
+				embed := discordgo.MessageEmbed{
+					Title:  queries[m.MessageID].results[queries[m.MessageID].number].title,
+					Image:  &discordgo.MessageEmbedImage{URL: queries[m.MessageID].results[queries[m.MessageID].number].image},
+					Color:  queries[m.MessageID].colour,
+					Footer: &discordgo.MessageEmbedFooter{Text: strconv.Itoa(queries[m.MessageID].results[queries[m.MessageID].number].number) + "/" + strconv.Itoa(queries[m.MessageID].returned)},
+					URL:    queries[m.MessageID].results[queries[m.MessageID].number].formattedUrl,
+				}
+				_, err := s.ChannelMessageEditEmbed(m.ChannelID, m.MessageID, &embed)
+				if err != nil {
+					s.ChannelMessageSend(m.ChannelID, err.Error())
+					return
+				}
+				return
+			}
 		}
 	}
 }
